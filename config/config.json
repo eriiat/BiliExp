@@ -180,7 +180,7 @@
         //  "msg_raw": null,    // msg_raw为完整的日志消息，用于下面hooks消息推送接口引用，若不引用最好注释掉，否则占用内存空间
 
             "title": "B站助手脚本消息推送", // 此为自定义变量，用于下面hooks消息推送接口引用
-            "SCKEY": "" ,
+            "SCKEY": "SCU145632T157ad17295dab96bc3520e5c30ae76345ff420474ce22" ,
         /*  "email": "",
             "telegram_bot_token": "",
             "telegram_bot_chatid": "",
@@ -188,7 +188,7 @@
         },
         "hooks": [ // 在这里以数组的形式定义所有消息推送回调接口
             {
-                "enable": false, // 开关，需要开启请直接把本项删除或设置为true
+                "enable": true, // 开关，需要开启请直接把本项删除或设置为true
                 "name": "server酱消息推送", // webhook名称，仅用于日志显示不用于实际消息推送
                 "msg_separ": "\n\n",       // 消息分隔符，推送消息时将每一条消息用两个换行符(\n)隔开
                 "method": 1,               // 请求方式,0为get,1为post,3为以json方式post
