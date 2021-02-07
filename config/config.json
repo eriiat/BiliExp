@@ -20,7 +20,7 @@
             "expire": 172800      // 值为整数，距离过期的时间(单位为秒),172800为两天，若礼物将在这个时间内过期则会被随机送出
         },
         "xlive_heartbeat_task": { // 任务:发送直播心跳，可用于获得小心心(每5分钟1个)和大老爷在线时长加经验(费时，不建议在云函数使用)
-            "enable": true,      //任务开关，值为true或false分别代表开启和关闭
+            "enable": false,      //任务开关，值为true或false分别代表开启和关闭
             "medal_room": true,   //在所有拥有粉丝牌的直播间心跳，值为true或false分别代表开启和关闭，只有在有粉丝牌的房间心跳才能获取小心心(时间累加多个房间,没有开播也累加)
             "room_id": [],       // 直播间id，值为整数数组，除了上面的拥有粉丝牌的直播间还可以在其他直播间心跳
             "send_msg": "打卡",  // 向所有有粉丝牌的房间发送消息(作用是点亮粉丝牌和增加其密度)，值为字符串，为空字符串则不发送
@@ -35,14 +35,14 @@
                                              [3, 2] 至少成为主播的提督 [3, 3] 至少成为主播的舰长
                                              注意本项的值为二维数组，例子参与无条件和需要关注主播和粉丝勋章至少为1级的天选时刻，本项的值应为 [[0, 0], [1, 0], [2, 1]]
                                               */
-            "delay": 2000,          //延迟，值为整数(单位秒)，每参与一次天选时刻延迟运行
+            "delay": 0,          //延迟，值为整数(单位秒)，每参与一次天选时刻延迟运行
             "room_filter": [],   //直播间黑名单，值为整数数组，指定直播间的天选将不会参与
             "gift_filter": [],   //礼物名称黑名单，值为字符串数组，排除掉一些不需要参与的礼物
-            "danmu_filter": [测试,钓鱼,炸鱼,大航海,上船,舰长,返现,抵用,代金,黑屋,上车,上反船,照片,素颜,自拍,cos,写真,皂片,开舰,上舰,自画像,封面照,封面,取关,美照,随机照,随机照片,好友],  //弹幕过滤关键字，值为字符串数组，弹幕包含此值会被过滤
+            "danmu_filter": [],  //弹幕过滤关键字，值为字符串数组，弹幕包含此值会被过滤
             "price_limit": 0,            //金瓜子上限，值为整数，投喂金瓜子超过此值会被过滤
             "unfollow": true,            //等待参与的天选结束后取消关注，值为true或false分别代表开启和关闭，仅在需要关注主播时有效
-            "follow_group": "天选未中奖分组",          //用户分组名称，值为字符串，将需要关注的主播放进用户分组里，空字符串为"默认分组",若不存在自动创建
-            "clean_group_interval": 1800,   //用户分组清理周期，值为整数，当日期能被此数整除时将follow_group参数指定的分组清空(全部取关),为0或者follow_group为空时不清空
+            "follow_group": "",          //用户分组名称，值为字符串，将需要关注的主播放进用户分组里，空字符串为"默认分组",若不存在自动创建
+            "clean_group_interval": 0,   //用户分组清理周期，值为整数，当日期能被此数整除时将follow_group参数指定的分组清空(全部取关),为0或者follow_group为空时不清空
             "search_interval": 300,     //搜索执行周期，值为整数(单位秒)，搜索直播间->抽奖->等待搜索周期->下一轮搜索
             "search_areas": [           //搜索区域数组，数组中每个值包含一个直播分区，在分区数组中搜索直播间
                 {"paid": 1,"aid": 0,"sort": "","ps": 40},
@@ -117,7 +117,7 @@
           //"create_dynamics_interval": [4, 6],              //每隔几个动态发一条自定义动态(消除抽奖特征)，值为二维整数数组[m, n]，每隔m到n个动态转发发一条自定义动态(仅对单次运行有效)
           //"create_dynamics": ["今天天气真好", "哈哈哈"],    //动态内容，字符串数组，要发动态的内容，随机抽一个
           //"create_dynamics_end": 0,                       //如果单次运行转发动态数量小于本配置，末尾加一条自定义动态，防止每次转发动态都只有一两条不会触发创建自定义动态
-            "delay": [10, 30], /* 转发延时，值为二维整数数组，用于防止转发过出现频繁的提示，模板意思是每次随机延时6-8秒转发
+            "delay": [6, 8], /* 转发延时，值为二维整数数组，用于防止转发过出现频繁的提示，模板意思是每次随机延时6-8秒转发
        /*----------------- 跟踪转发模式------------------- */
             "repost_by_others": [], //跟踪的B站用户uid，值为整数数组(每个数字代表B站账户uid)，为空数组则关闭跟踪转发模式而只转发自己的动态，不为空数组则转发指定账户的动态
             "force_follow": false   // 是否强制关注抽奖up主，值为true或false，若为true，当跟踪的up转发动态的源up主你没有关注时你也会强制关注
@@ -130,11 +130,11 @@
        /*----------------------end----------------------- */
         },
         "msg_notify_task": {     // 任务:主站@消息,私聊消息推送,配合互动抽奖任务和天选时刻使用便于得到中奖消息(多账号可能需要)
-            "enable": true,     // 任务开关，值为true或false分别代表开启和关闭
+            "enable": false,     // 任务开关，值为true或false分别代表开启和关闭
             "black_keywords": ["欢迎", "感谢", "关注"] //过滤关键字，值为字符串数组
         },
         "clean_dynamic_task": {   // 任务:清理自己的动态，包括过期抽奖，失效动态
-            "enable": true,      // 任务开关，值为true或false分别代表开启和关闭
+            "enable": false,      // 任务开关，值为true或false分别代表开启和关闭
             "black_keywords": [], // 黑名单关键字，值为字符串数组，出现关键字的动态会被清除
             "unfollowed": false,  // 删除已转发的但是没有关注的up主的动态，值为true或false分别代表删除和忽略
             "days_range": [7, 30] // 限制删除动态的时间区间，值为二维整数数组(单位天)，这里表示只对7天之前30天以内的动态执行清理，天数按执行当天24点向前计算
@@ -149,7 +149,7 @@
             "days": [1]           // 每月尝试领取的日期,值为整数数组,指定多个日期会重复尝试领取
         },
         "manga_auto_buy_task": {  // 任务:自动花费即将过期的漫读劵
-            "enable": true,      // 任务开关，值为true或false分别代表开启和关闭
+            "enable": false,      // 任务开关，值为true或false分别代表开启和关闭
             "mode": 1,            // 购买模式，值为整数(目前仅1或2)，mode为1，自动购买追漫列表的漫画，mode为2，购买filter参数中的指定漫画
             "filter": "25900|1-30,35,55;25966|5,15,35-" //过滤漫画参数，值为字符串，格式为"漫画mc号1|章节序号1,章节序号2;漫画mc号2|章节序号1,章节序号2"这样的格式指定要购买的漫画
         },
@@ -165,6 +165,98 @@
             "timeout": 2700         // 任务超时，值为数字(单位秒)，超过时间仍没有达到投票次数则退出任务
         },
         "activity_task": {      // 任务:参与B站转盘抽奖活动
+            "enable": true,     //  任务开关，值为true或false分别代表开启和关闭
+            "path": "./config/activities.json", // B站转盘抽奖列表文件，值为字符串，小数点代表当前目录，本地运行也可指定绝对目录
+            "activities": []                    // B站转盘抽奖列表，值为抽奖活动数组，目前这个数据被放到了转盘抽奖列表文件里面，也可以放在这里而不需要额外指定列表文件
+        }
+    },
+    "webhook": { /* 用于自定义消息推送,server酱消息推送只需填写下面SCKEY参数和在hooks参数中enable设置为true，另外提供邮箱推送和telegram推送模板
+                    使用actions的用户也可以直接使用secrets(push_message)，不需要填写本项
+                    如果使用其他推送平台，请自行查阅相应平台数据格式，按照本模板添加到本配置中，理论上本项目从配置文件上支持所有http格式的消息推送平台    */
+
+        "http_header": {"User-Agent":"Mozilla/5.0"}, // 定义http头部，访问消息推送接口时使用
+        "variable": { // 声明变量,在hooks参数中的url参数和params参数中使用大括号{}可直接引用在此声明的变量，"msg_"开头变量为程序内置变量不允许赋值
+            "msg_simple": null, // msg_simple为简化的日志消息，用于下面hooks消息推送接口引用
+        //  "msg_raw": null,    // msg_raw为完整的日志消息，用于下面hooks消息推送接口引用，若不引用最好注释掉，否则占用内存空间
+
+            "title": "B站助手脚本消息推送", // 此为自定义变量，用于下面hooks消息推送接口引用
+            "SCKEY": "" ,
+        /*  "email": "",
+            "telegram_bot_token": "",
+            "telegram_bot_chatid": "",
+            "SKEY": "" */
+        },
+        "hooks": [ // 在这里以数组的形式定义所有消息推送回调接口
+            {
+                "enable": false, // 开关，需要开启请直接把本项删除或设置为true
+                "name": "server酱消息推送", // webhook名称，仅用于日志显示不用于实际消息推送
+                "msg_separ": "\n\n",       // 消息分隔符，推送消息时将每一条消息用两个换行符(\n)隔开
+                "method": 1,               // 请求方式,0为get,1为post,3为以json方式post
+                "url": "https://sc.ftqq.com/{SCKEY}.send", // 请求地址,{SCKEY}为对上面variable变量中的SCKEY的引用，当然也可以直接把SCKEY的值放在url里面
+                "params": {                                // 请求参数,server酱推送需要text和desp两个参数，分别把变量里title和msg_simple(简化消息)赋值进去
+                    "text": "{title}",
+                    "desp": "{msg_simple}" 
+                }
+            }/*, //若要实现其他消息推送接口，需要自己查阅相关文档构建method，url和params三个参数，下面是邮箱推送和telegram_bot推送的例子，其他平台自行探索
+            {
+                "enable": false,
+                "name": "邮箱消息推送",
+                "msg_separ": "<br>",
+                "method": 1,
+                "url": "https://email.berfen.com/api",
+                "params": {
+                    "to": "{email}",
+                    "title": "{title}",
+                    "text": "{msg_simple}" 
+                }
+            },
+            {
+                "enable": false,
+                "name": "telegram_bot消息推送",
+                "method": 1,
+                "url": "https://api.telegram.org/bot{telegram_bot_token}/sendMessage",
+                "params": {
+                    "chat_id": "{telegram_bot_chatid}",
+                    "text": "{msg_simple}"
+                }
+            },
+            {
+                "enable": false,
+                "name": "酷推个人QQ消息推送",
+                "method": 3,
+                "url": "https://push.xuthus.cc/send/{SKEY}",
+                "params": {
+                    "c": "{msg_simple}"
+                }
+            }*/
+        ]
+    },
+    "log_file": "BiliExp.log",   // 输出日志文件，不输出请留空，也可填写完整路径
+    "log_console": false,         // 是否把日志输出到控制台
+    "users": [{                 //账户数组，每个账户包含一个cookieDatas和tasks参数，使用actions的用户可以使用secrets(biliconfig)指定cookie而不用本参数
+        "cookieDatas": {        // cookie获取方式见项目说明
+            "SESSDATA": "账号SESSDATA",
+            "bili_jct": "账号bili_jct",
+            "DedeUserID": "账号uid"
+        },
+        "show_name": "", /* 昵称，用于日志，消息推送，填空则默认使用账号昵称，在actions上不想显示真实昵称时使用
+        /* 下面tasks参数与最上面default参数作用相同，但优先级更高，用于定制每个账号的参数，
+             tasks参数中不存在的配置用default代替，为空则相当于直接使用default中所有配置当做这个账户的配置
+             default中不存在的配置在tasks参数中出现则无效(default中支持以删除功能配置的方式禁用功能，这种禁用是全局的，在这里配置开启也无效) */
+        "tasks": {}
+    }/*, { //下面注释掉的是第二个账号的参数例子，以此类推多个账号，单账号仅填写上面内容
+        "cookieDatas": {
+            "SESSDATA": "4a5f1c63%2C1785313721%2Cdf9fc*a1",
+            "bili_jct": "cf28ba45824d443646907a5c4da8cf1",
+            "DedeUserID": "914624742"
+        },
+        "show_name": "账号2",
+        "tasks": {                //上面default参数中投币任务和风纪委任务都是开启的，这里在第二个账号上关闭而不影响其他任务和其他账号
+            "coin_task": false,   //直接赋值false是简化的关闭方法，也可以像default中那样用enable参数关闭，若只修改投币数量(配置中的其中一项)则必须按照default中的格式指定
+            "judgement_task": false
+        }
+    }*/]
+}任务:参与B站转盘抽奖活动
             "enable": true,     //  任务开关，值为true或false分别代表开启和关闭
             "path": "./config/activities.json", // B站转盘抽奖列表文件，值为字符串，小数点代表当前目录，本地运行也可指定绝对目录
             "activities": []                    // B站转盘抽奖列表，值为抽奖活动数组，目前这个数据被放到了转盘抽奖列表文件里面，也可以放在这里而不需要额外指定列表文件
