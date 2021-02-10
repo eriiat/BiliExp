@@ -35,9 +35,9 @@
                                              [3, 2] 至少成为主播的提督 [3, 3] 至少成为主播的舰长
                                              注意本项的值为二维数组，例子参与无条件和需要关注主播和粉丝勋章至少为1级的天选时刻，本项的值应为 [[0, 0], [1, 0], [2, 1]]
                                               */
-            "delay": 3,          //延迟，值为整数(单位秒)，每参与一次天选时刻延迟运行
+            "delay": 0,          //延迟，值为整数(单位秒)，每参与一次天选时刻延迟运行
             "room_filter": [],   //直播间黑名单，值为整数数组，指定直播间的天选将不会参与
-            "gift_filter": ["测试","钓鱼","炸鱼","海","船","舰","返现","抵用","代","黑","车","照","素颜","拍","cos","写真","画","封面","取关","壁纸","图","好友"],   //礼物名称黑名单，值为字符串数组，排除掉一些不需要参与的礼物
+            "gift_filter": [],   //礼物名称黑名单，值为字符串数组，排除掉一些不需要参与的礼物
             "danmu_filter": [],  //弹幕过滤关键字，值为字符串数组，弹幕包含此值会被过滤
             "price_limit": 0,            //金瓜子上限，值为整数，投喂金瓜子超过此值会被过滤
             "unfollow": true,            //等待参与的天选结束后取消关注，值为true或false分别代表开启和关闭，仅在需要关注主播时有效
@@ -130,11 +130,11 @@
        /*----------------------end----------------------- */
         },
         "msg_notify_task": {     // 任务:主站@消息,私聊消息推送,配合互动抽奖任务和天选时刻使用便于得到中奖消息(多账号可能需要)
-            "enable": true,     // 任务开关，值为true或false分别代表开启和关闭
+            "enable": false,     // 任务开关，值为true或false分别代表开启和关闭
             "black_keywords": ["欢迎", "感谢", "关注"] //过滤关键字，值为字符串数组
         },
         "clean_dynamic_task": {   // 任务:清理自己的动态，包括过期抽奖，失效动态
-            "enable": true,      // 任务开关，值为true或false分别代表开启和关闭
+            "enable": false,      // 任务开关，值为true或false分别代表开启和关闭
             "black_keywords": [], // 黑名单关键字，值为字符串数组，出现关键字的动态会被清除
             "unfollowed": false,  // 删除已转发的但是没有关注的up主的动态，值为true或false分别代表删除和忽略
             "days_range": [7, 30] // 限制删除动态的时间区间，值为二维整数数组(单位天)，这里表示只对7天之前30天以内的动态执行清理，天数按执行当天24点向前计算
@@ -155,108 +155,16 @@
         },
         "judgement_task": {      //  任务:风纪委员投票
             "enable": true,      //  任务开关，值为true或false分别代表开启和关闭
-            "run_once": false,   //没有案件立即退出，值为true或false，值为false才会等待超时退出(Actions上默认)，云函数上推荐设置为true并每隔30分钟调用此功能
+            "run_once": true,   //没有案件立即退出，值为true或false，值为false才会等待超时退出(Actions上默认)，云函数上推荐设置为true并每隔30分钟调用此功能
             "params": {      // 默认投票参数，vote值程序会自动使用从众法填写，注意此项下面的可选子参数的值不止vote和attr两个，其他参数请看项目的说明文件(其他参数均为非必须参数可以不需要)
                 "vote": 4,   // 投票类型，值为整数，4为投删除票，其他取值看项目说明文件，非必须参数此行可以删除但不建议
                 "attr": 0    // 是否匿名，值为整数，0为匿名投票，其他取值看项目说明文件，非必须参数此行可以删除但不建议
             },
             "vote_num": 20,         // 投票次数，值为整数，达到投票次数后退出任务
             "check_interval": 420,  // 定时检查间隔，值为数字(单位秒)，当没有案件时每隔一段时间定时检查是否有新的案件，请适当设置此间隔(不宜过短或过长)
-            "timeout": 7200         // 任务超时，值为数字(单位秒)，超过时间仍没有达到投票次数则退出任务
+            "timeout": 2700         // 任务超时，值为数字(单位秒)，超过时间仍没有达到投票次数则退出任务
         },
         "activity_task": {      // 任务:参与B站转盘抽奖活动
-            "enable": true,     //  任务开关，值为true或false分别代表开启和关闭
-            "path": "./config/activities.json", // B站转盘抽奖列表文件，值为字符串，小数点代表当前目录，本地运行也可指定绝对目录
-            "activities": []                    // B站转盘抽奖列表，值为抽奖活动数组，目前这个数据被放到了转盘抽奖列表文件里面，也可以放在这里而不需要额外指定列表文件
-        }
-    },
-    "webhook": { /* 用于自定义消息推送,server酱消息推送只需填写下面SCKEY参数和在hooks参数中enable设置为true，另外提供邮箱推送和telegram推送模板
-                    使用actions的用户也可以直接使用secrets(push_message)，不需要填写本项
-                    如果使用其他推送平台，请自行查阅相应平台数据格式，按照本模板添加到本配置中，理论上本项目从配置文件上支持所有http格式的消息推送平台    */
-
-        "http_header": {"User-Agent":"Mozilla/5.0"}, // 定义http头部，访问消息推送接口时使用
-        "variable": { // 声明变量,在hooks参数中的url参数和params参数中使用大括号{}可直接引用在此声明的变量，"msg_"开头变量为程序内置变量不允许赋值
-            "msg_simple": null, // msg_simple为简化的日志消息，用于下面hooks消息推送接口引用
-        //  "msg_raw": null,    // msg_raw为完整的日志消息，用于下面hooks消息推送接口引用，若不引用最好注释掉，否则占用内存空间
-
-            "title": "B站助手脚本消息推送", // 此为自定义变量，用于下面hooks消息推送接口引用
-            "SCKEY": "SCU145632T157ad17295dab96bc3520e5c30ae76345ff420474ce22" ,
-        /*  "email": "",
-            "telegram_bot_token": "",
-            "telegram_bot_chatid": "",
-            "SKEY": "" */
-        },
-        "hooks": [ // 在这里以数组的形式定义所有消息推送回调接口
-            {
-                "enable": true, // 开关，需要开启请直接把本项删除或设置为true
-                "name": "server酱消息推送", // webhook名称，仅用于日志显示不用于实际消息推送
-                "msg_separ": "\n\n",       // 消息分隔符，推送消息时将每一条消息用两个换行符(\n)隔开
-                "method": 1,               // 请求方式,0为get,1为post,3为以json方式post
-                "url": "https://sc.ftqq.com/{SCKEY}.send", // 请求地址,{SCKEY}为对上面variable变量中的SCKEY的引用，当然也可以直接把SCKEY的值放在url里面
-                "params": {                                // 请求参数,server酱推送需要text和desp两个参数，分别把变量里title和msg_simple(简化消息)赋值进去
-                    "text": "{title}",
-                    "desp": "{msg_simple}" 
-                }
-            }/*, //若要实现其他消息推送接口，需要自己查阅相关文档构建method，url和params三个参数，下面是邮箱推送和telegram_bot推送的例子，其他平台自行探索
-            {
-                "enable": false,
-                "name": "邮箱消息推送",
-                "msg_separ": "<br>",
-                "method": 1,
-                "url": "https://email.berfen.com/api",
-                "params": {
-                    "to": "{email}",
-                    "title": "{title}",
-                    "text": "{msg_simple}" 
-                }
-            },
-            {
-                "enable": false,
-                "name": "telegram_bot消息推送",
-                "method": 1,
-                "url": "https://api.telegram.org/bot{telegram_bot_token}/sendMessage",
-                "params": {
-                    "chat_id": "{telegram_bot_chatid}",
-                    "text": "{msg_simple}"
-                }
-            },
-            {
-                "enable": false,
-                "name": "酷推个人QQ消息推送",
-                "method": 3,
-                "url": "https://push.xuthus.cc/send/{SKEY}",
-                "params": {
-                    "c": "{msg_simple}"
-                }
-            }*/
-        ]
-    },
-    "log_file": "BiliExp.log",   // 输出日志文件，不输出请留空，也可填写完整路径
-    "log_console": false,         // 是否把日志输出到控制台
-    "users": [{                 //账户数组，每个账户包含一个cookieDatas和tasks参数，使用actions的用户可以使用secrets(biliconfig)指定cookie而不用本参数
-        "cookieDatas": {        // cookie获取方式见项目说明
-            "SESSDATA": "账号SESSDATA",
-            "bili_jct": "账号bili_jct",
-            "DedeUserID": "账号uid"
-        },
-        "show_name": "", /* 昵称，用于日志，消息推送，填空则默认使用账号昵称，在actions上不想显示真实昵称时使用
-        /* 下面tasks参数与最上面default参数作用相同，但优先级更高，用于定制每个账号的参数，
-             tasks参数中不存在的配置用default代替，为空则相当于直接使用default中所有配置当做这个账户的配置
-             default中不存在的配置在tasks参数中出现则无效(default中支持以删除功能配置的方式禁用功能，这种禁用是全局的，在这里配置开启也无效) */
-        "tasks": {}
-    }/*, { //下面注释掉的是第二个账号的参数例子，以此类推多个账号，单账号仅填写上面内容
-        "cookieDatas": {
-            "SESSDATA": "4a5f1c63%2C1785313721%2Cdf9fc*a1",
-            "bili_jct": "cf28ba45824d443646907a5c4da8cf1",
-            "DedeUserID": "914624742"
-        },
-        "show_name": "账号2",
-        "tasks": {                //上面default参数中投币任务和风纪委任务都是开启的，这里在第二个账号上关闭而不影响其他任务和其他账号
-            "coin_task": false,   //直接赋值false是简化的关闭方法，也可以像default中那样用enable参数关闭，若只修改投币数量(配置中的其中一项)则必须按照default中的格式指定
-            "judgement_task": false
-        }
-    }*/]
-}任务:参与B站转盘抽奖活动
             "enable": true,     //  任务开关，值为true或false分别代表开启和关闭
             "path": "./config/activities.json", // B站转盘抽奖列表文件，值为字符串，小数点代表当前目录，本地运行也可指定绝对目录
             "activities": []                    // B站转盘抽奖列表，值为抽奖活动数组，目前这个数据被放到了转盘抽奖列表文件里面，也可以放在这里而不需要额外指定列表文件
@@ -280,7 +188,7 @@
         },
         "hooks": [ // 在这里以数组的形式定义所有消息推送回调接口
             {
-                "enable": true, // 开关，需要开启请直接把本项删除或设置为true
+                "enable": false, // 开关，需要开启请直接把本项删除或设置为true
                 "name": "server酱消息推送", // webhook名称，仅用于日志显示不用于实际消息推送
                 "msg_separ": "\n\n",       // 消息分隔符，推送消息时将每一条消息用两个换行符(\n)隔开
                 "method": 1,               // 请求方式,0为get,1为post,3为以json方式post
